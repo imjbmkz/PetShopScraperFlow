@@ -2,7 +2,7 @@ import math
 import asyncio
 import requests
 import pandas as pd
-from functions.etl import PetProductsETL
+from ..etl import PetProductsETL
 from bs4 import BeautifulSoup
 from fake_useragent import UserAgent
 from loguru import logger

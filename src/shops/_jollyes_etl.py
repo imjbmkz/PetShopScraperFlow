@@ -3,7 +3,7 @@ import pandas as pd
 import json
 import math
 import re
-from functions.etl import PetProductsETL
+from ..etl import PetProductsETL
 from bs4 import BeautifulSoup
 from loguru import logger
 

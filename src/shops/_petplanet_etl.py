@@ -4,7 +4,7 @@ import random
 import asyncio
 import pandas as pd
 
-from functions.etl import PetProductsETL
+from ..etl import PetProductsETL
 from bs4 import BeautifulSoup
 from fake_useragent import UserAgent
 from playwright.async_api import async_playwright

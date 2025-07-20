@@ -4,7 +4,7 @@ import asyncio
 import pandas as pd
 
 
-from functions.etl import PetProductsETL
+from ..etl import PetProductsETL
 from bs4 import BeautifulSoup
 from loguru import logger
 

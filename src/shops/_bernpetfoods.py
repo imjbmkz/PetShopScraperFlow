@@ -6,7 +6,7 @@ import math
 import pandas as pd
 
 from bs4 import BeautifulSoup
-from functions.etl import PetProductsETL
+from ..etl import PetProductsETL
 from loguru import logger
 
 

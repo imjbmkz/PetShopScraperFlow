@@ -2,7 +2,7 @@ import asyncio
 import re
 import math
 import pandas as pd
-from functions.etl import PetProductsETL
+from ..etl import PetProductsETL
 from bs4 import BeautifulSoup
 from loguru import logger
 

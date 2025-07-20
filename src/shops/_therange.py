@@ -3,7 +3,7 @@ import math
 import random
 import pandas as pd
 
-from functions.etl import PetProductsETL
+from ..etl import PetProductsETL
 from bs4 import BeautifulSoup
 from loguru import logger
 from fake_useragent import UserAgent

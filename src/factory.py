@@ -1,4 +1,4 @@
-from shops import (
+from .shops import (
     AsdaETL,
     BernPetFoodsETL,
     BitibaETL,
