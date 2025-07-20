@@ -1,0 +1,32 @@
+{
+	"data": [
+		"/dogs/food",
+		"/dogs/medication-supplements",
+		"/dogs/training,toys,animal-wear,care-grooming,home-garden-travel,cleaning-hygiene-1",
+		"/dogs/medication-supplements/prescription-medication",
+		"/cats/food",
+		"/cats/medication-supplements",
+		"/cats/training,toys,animal-wear,care-grooming,home-garden-travel,cleaning-hygiene-1",
+		"/cats/medication-supplements/prescription-medication",
+		"/horses-ponies/medication-supplements/supplements-1",
+		"/horses-ponies/animal-wear",
+		"/horses-ponies/care-grooming",
+		"/horses-ponies/medication-supplements/prescription-medication",
+		"/saddlery",
+		"/human/clothing-human/riding-wear",
+		"/stable-yard-field-arena",
+		"/horses-ponies/medication-supplements/non-prescription-medication-1/worm-control-1",
+		"/small-animals/food",
+		"/flp/small-animal-accessories",
+		"/small-animals/medication-supplements",
+		"/fish-1",
+		"/reptiles/accessories",
+		"/reptiles/food",
+		"/reptiles/medication-supplements",
+		"/birds/home-garden-travel/housing/cages-accessories",
+		"/birds/food",
+		"/birds/medication-supplements",
+		"/medication-supplements/prescription-medication",
+		"/farm-animals"
+	]
+}
