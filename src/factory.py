@@ -1,3 +1,4 @@
+from .etl import PetProductsETL
 from .shops import (
     AsdaETL,
     BernPetFoodsETL,
@@ -66,7 +67,7 @@ SHOPS = {
 }
 
 
-def run_etl(shop: str):
+def run_etl(shop: str) -> PetProductsETL:
     if shop in SHOPS:
         return SHOPS[shop]
     else:

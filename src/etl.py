@@ -3,6 +3,7 @@ import json
 import asyncio
 import pandas as pd
 
+from pathlib import Path
 from abc import ABC, abstractmethod
 from .connection import Connection
 from .scraper import scrape_url
@@ -98,8 +99,9 @@ class PetProductsETL(ABC):
         temp_url_table = f"stg_{self.SHOP.lower()}_temp_url_links"
 
         BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        file_path = os.path.join(
-            BASE_DIR, "data", "categories", f"{self.SHOP.lower()}.json")
+        # file_path = os.path.join(
+        #     BASE_DIR, "data", "categories", f"{self.SHOP.lower()}.json")
+        file_path = Path(__file__).parent / f"config/{self.SHOP.lower()}.json"
 
         if not self.connection.check_table_exists(temp_url_table):
 

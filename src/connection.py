@@ -1,6 +1,7 @@
 import os
 import pandas as pd
-from sqlalchemy import create_engine, text, inspect
+from pathlib import Path
+from sqlalchemy import create_engine, text, inspect, URL
 from sqlalchemy.engine import Engine
 from sqlalchemy.exc import SQLAlchemyError
 from dotenv import load_dotenv
@@ -36,8 +37,17 @@ class Connection:
 
     def _create_engine(self) -> Engine:
         try:
+            connection_string = URL.create(
+                drivername=self.driver,
+                username=self.user,
+                password=self.password,
+                host=self.host,
+                port=self.port,
+                database=self.database
+            )
             engine = create_engine(
-                f"{self.driver}://{self.user}:{self.password}@{self.host}:{self.port}/{self.database}",
+                connection_string,
+                # f"{self.driver}://{self.user}:{self.password}@{self.host}:{self.port}/{self.database}",
                 echo=False
             )
 
@@ -60,7 +70,8 @@ class Connection:
             raise
 
     def get_sql_from_file(self, file_name: str) -> str:
-        file_path = os.path.join("sql", file_name)
+        file_path = Path(__file__).parent / "sql" / file_name
+        # file_path = os.path.join("sql", file_name)
         try:
             with open(file_path, "r") as f:
                 return f.read()
