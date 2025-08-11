@@ -6,7 +6,7 @@ import random
 import pandas as pd
 import requests
 
-from ..etl import PetProductsETL
+from functions.etl import PetProductsETL
 from bs4 import BeautifulSoup
 from loguru import logger
 from tenacity import retry, wait_exponential, stop_after_attempt, retry_if_exception_type, before_sleep_log
@@ -25,8 +25,9 @@ class BitibaETL(PetProductsETL):
         self.SHOP = "Bitiba"
         self.BASE_URL = "https://www.bitiba.co.uk"
         self.SELECTOR_SCRAPE_PRODUCT_INFO = 'main#page-content'
-        self.MIN_SEC_SLEEP_PRODUCT_INFO = 310
-        self.MAX_SEC_SLEEP_PRODUCT_INFO = 350
+        self.MIN_SEC_SLEEP_PRODUCT_INFO = 1
+        self.MAX_SEC_SLEEP_PRODUCT_INFO = 3
+        self.with_proxy = True
 
     @retry(
         wait=wait_exponential(
@@ -127,7 +128,7 @@ class BitibaETL(PetProductsETL):
             product_data_list = soup.select(
                 "script[type*='application/ld+json']")
             if product_data_list:
-                product_data = json.loads(product_data_list[0].text)
+                product_data = json.loads(product_data_list[1].text)
 
                 product_title = product_data["name"]
                 rating = '0/5'

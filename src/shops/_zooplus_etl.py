@@ -6,7 +6,7 @@ import json
 import time
 import pandas as pd
 
-from ..etl import PetProductsETL
+from functions.etl import PetProductsETL
 from bs4 import BeautifulSoup
 from loguru import logger
 from fake_useragent import UserAgent
@@ -18,8 +18,9 @@ class ZooplusETL(PetProductsETL):
         self.SHOP = "Zooplus"
         self.BASE_URL = "https://www.zooplus.co.uk"
         self.SELECTOR_SCRAPE_PRODUCT_INFO = '#page-content'
-        self.MIN_SEC_SLEEP_PRODUCT_INFO = 60 # 301
-        self.MAX_SEC_SLEEP_PRODUCT_INFO = 65 # 305
+        self.MIN_SEC_SLEEP_PRODUCT_INFO = 1
+        self.MAX_SEC_SLEEP_PRODUCT_INFO = 3
+        self.with_proxy = True
 
     def get_product_links(self, url, headers):
         try:
@@ -78,8 +79,10 @@ class ZooplusETL(PetProductsETL):
                 pagination_product_api = self.get_product_links(
                     pagination_url, headers=headers)
                 if pagination_product_api.status_code == 200:
-                    for products in pagination_product_api.json()['productList']['products']:
-                        urls.append(self.BASE_URL + products["path"])
+                    urls.extend([self.BASE_URL + products["path"]
+                                for products in pagination_product_api.json()['productList']['products']])
+                else:
+                    urls.extend([])
 
         df = pd.DataFrame({"url": urls})
         df.insert(0, "shop", self.SHOP)
@@ -88,7 +91,7 @@ class ZooplusETL(PetProductsETL):
     def transform(self, soup: BeautifulSoup, url: str):
         try:
             product_data = json.loads(soup.select(
-                "script[type*='application/ld+json']")[0].text)
+                "script[type*='application/ld+json']")[1].text)
             product_name = product_data['name']
             product_description = product_data['description']
             product_url = url.replace(self.BASE_URL, "")

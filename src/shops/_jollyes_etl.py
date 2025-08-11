@@ -3,9 +3,13 @@ import pandas as pd
 import json
 import math
 import re
-from ..etl import PetProductsETL
+import random
+from functions.etl import PetProductsETL
 from bs4 import BeautifulSoup
 from loguru import logger
+
+from fake_useragent import UserAgent
+from playwright.async_api import async_playwright
 
 
 class JollyesETL(PetProductsETL):
@@ -16,10 +20,87 @@ class JollyesETL(PetProductsETL):
         self.SELECTOR_SCRAPE_PRODUCT_INFO = '#viewport'
         self.MIN_SEC_SLEEP_PRODUCT_INFO = 1
         self.MAX_SEC_SLEEP_PRODUCT_INFO = 4
+        self.browser_type = 'chromium'
+
+    async def product_list_scrolling(self, url, selector, click_times):
+        soup = None
+        browser = None
+        try:
+            async with async_playwright() as p:
+                browser_args = {
+                    "headless": True,
+                    "args": ["--disable-blink-features=AutomationControlled"]
+                }
+
+                browser = await p.chromium.launch(**browser_args)
+                context = await browser.new_context(
+                    user_agent=UserAgent().random,
+                    viewport={"width": random.randint(
+                        1200, 1600), "height": random.randint(800, 1200)},
+                    locale="en-US"
+                )
+
+                page = await context.new_page()
+                await page.set_extra_http_headers({
+                    "User-Agent": UserAgent().random,
+                    "Accept-Language": "en-US,en;q=0.9",
+                    "Origin": "https://www.jollyes.co.uk",
+                    "Referer": url,
+                })
+
+                await page.goto(url, wait_until="load")
+                await page.wait_for_selector(selector, timeout=60000)
+
+                logger.info(
+                    "Starting to click 'Load More' button if available...")
+
+                for i in range(click_times):
+                    try:
+                        load_more_btn = await page.query_selector("div.progress-row a")
+                        if load_more_btn and await load_more_btn.is_visible():
+                            current_products = await page.query_selector_all("a.product-link")
+                            count_before = len(current_products)
+
+                            await load_more_btn.click()
+                            logger.info(
+                                f"Clicked 'Load More' button ({i + 1}/{click_times})")
+
+                            await page.wait_for_function(
+                                f'document.querySelectorAll("a.product-link").length > {count_before}',
+                                timeout=120000
+                            )
+
+                        else:
+                            logger.warning(
+                                "Load More button not found or not visible. Stopping clicks early.")
+                            break
+                    except Exception as e:
+                        logger.warning(f"Error during click {i + 1}: {e}")
+                        break
+
+                logger.info("Scraping complete. Extracting content...")
+
+                rendered_html = await page.content()
+                logger.info(
+                    f"Successfully extracted data from {url}"
+                )
+                sleep_time = random.uniform(
+                    3, 5)
+                logger.info(f"Sleeping for {sleep_time} seconds...")
+                soup = BeautifulSoup(rendered_html, "html.parser")
+                return soup.find_all('a', class_="product-link")
+
+        except Exception as e:
+            logger.error(f"An error occurred: {e}")
+
+        finally:
+            if browser:
+                await browser.close()
 
     def extract(self, category):
         category_link = f"{self.BASE_URL}/{category}.html"
-        soup = asyncio.run(self.scrape(category_link, '#category'))
+        soup = asyncio.run(self.scrape(
+            category_link, '#category', wait_until="networkidle"))
 
         subcategory_links = [link["href"] for ul in soup.select(
             "ul.second-category") for link in ul.select("a")]
@@ -28,10 +109,9 @@ class JollyesETL(PetProductsETL):
 
         for subcategory in subcategory_links:
             url = self.BASE_URL + subcategory
-            category_product_urls = []
 
             category_soup = asyncio.run(self.scrape(
-                url, '.product-list', wait_until="networkidle"))
+                url, '.product-list', wait_until="networkidle", min_sec=3, max_sec=5))
 
             if not category_soup:
                 logger.error(f"[ERROR] Failed to fetch or parse: {url}")
@@ -51,27 +131,14 @@ class JollyesETL(PetProductsETL):
                 logger.warning(f"[WARN] No 'sorting-row' found for {url}")
                 continue
 
-            n_pagination = math.ceil(n_products / 100)
+            n_pagination = math.ceil(n_products / 40)
 
-            for n in range(1, n_pagination + 1):
-                product_soup = asyncio.run(self.scrape(
-                    f'{self.BASE_URL}{subcategory}?page={n}&perPage=100', '.product-list'))
+            product_links = asyncio.run(self.product_list_scrolling(
+                url, '.product-list', n_pagination))
 
-                if not product_soup:
-                    logger.error(
-                        f"[ERROR] Failed to fetch or parse: {self.BASE_URL}{subcategory}?page={n}&perPage=100")
-                    continue
-
-                product_tiles = product_soup.select(
-                    "div[class*='product-tile']")
-
-                for product_tile in product_tiles:
-                    product_url = product_tile.select_one("a")
-                    if product_url:
-                        category_product_urls.append(
-                            self.BASE_URL + product_url["href"])
-
-            urls.extend(category_product_urls)
+            if product_links:
+                urls.extend([self.BASE_URL + links.get('href')
+                            for links in product_links])
 
         df = pd.DataFrame({"url": urls})
         df.insert(0, "shop", self.SHOP)

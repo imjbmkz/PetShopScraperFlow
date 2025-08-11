@@ -3,7 +3,7 @@ import asyncio
 import requests
 import pandas as pd
 
-from ..etl import PetProductsETL
+from functions.etl import PetProductsETL
 from bs4 import BeautifulSoup
 from loguru import logger
 
@@ -46,8 +46,10 @@ class FarmAndPetPlaceETL(PetProductsETL):
 
     def extract(self, category):
         urls = []
+
+        self.category_urls = []
+        self.scrape_url_again = []
         self.scraped_urls = set()
-        self.scraped_urls.add(category)
 
         soup = asyncio.run(self.scrape(
             category, '.main-products-loop', wait_until='load',
@@ -88,17 +90,15 @@ class FarmAndPetPlaceETL(PetProductsETL):
                     base = url_category.split("page-")[0]
                     new_url = f"{base}page-{i}.html"
 
-                    soup_pagination = asyncio.run(
+                    soup_page = asyncio.run(
                         self.scrape(new_url, 'div.shop-filters-area',
                                     min_sec=1, max_sec=3)
                     )
 
-                    if not soup_pagination or isinstance(soup_pagination, bool):
-                        logger.warning(
-                            f"[WARN] Skipped pagination page: {new_url}")
+                    if not soup_page:
                         continue
 
-                    shop_area = soup_pagination.find(
+                    shop_area = soup_page.find(
                         'div', class_="shop-filters-area")
                     if shop_area:
                         urls.extend([
@@ -114,8 +114,12 @@ class FarmAndPetPlaceETL(PetProductsETL):
 
     def transform(self, soup: BeautifulSoup, url: str):
         try:
-            product_name = soup.find(
-                'h1', attrs={'itemprop': 'name'}).get_text()
+            product_name = soup.find('h1', attrs={'itemprop': 'name'})
+            if product_name:
+                product_name = product_name.get_text()
+            else:
+                return pd.DataFrame({})
+
             product_description = None
 
             if soup.find('div', class_="short-description"):
@@ -126,10 +130,18 @@ class FarmAndPetPlaceETL(PetProductsETL):
             product_id = soup.find(
                 'div', class_="ruk_rating_snippet").get('data-sku')
 
-            rating_wrapper = requests.get(
-                f"https://api.feefo.com/api/10/reviews/summary/product?since_period=ALL&parent_product_sku={product_id}&merchant_identifier=farm-pet-place&origin=www.farmandpetplace.co.uk")
-            rating = float(rating_wrapper.json()['rating']['rating'])
-            product_rating = f'{rating}/5'
+            try:
+                rating_wrapper = requests.get(
+                    f"https://api.feefo.com/api/10/reviews/summary/product?since_period=ALL&parent_product_sku={product_id}&merchant_identifier=farm-pet-place&origin=www.farmandpetplace.co.uk")
+
+                if rating_wrapper.status_code == 200 and rating_wrapper.json().get('rating', {}).get('rating'):
+                    rating = float(rating_wrapper.json()['rating']['rating'])
+                    product_rating = f'{rating}/5'
+                else:
+                    product_rating = '0/5'
+
+            except (requests.RequestException, KeyError, ValueError, TypeError):
+                product_rating = '0/5'
 
             variants = []
             prices = []

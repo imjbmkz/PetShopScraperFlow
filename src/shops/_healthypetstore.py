@@ -1,7 +1,7 @@
 import json
 import asyncio
 import pandas as pd
-from ..etl import PetProductsETL
+from functions.etl import PetProductsETL
 from bs4 import BeautifulSoup
 from loguru import logger
 
@@ -14,6 +14,8 @@ class HealthyPetStoreETL(PetProductsETL):
         self.SELECTOR_SCRAPE_PRODUCT_INFO = '#wrapper'
         self.MIN_SEC_SLEEP_PRODUCT_INFO = 1
         self.MAX_SEC_SLEEP_PRODUCT_INFO = 3
+        self.wait_until = "domcontentloaded"
+        self.browser_type = 'firefox'
 
     def extract(self, category):
         url = self.BASE_URL + category
@@ -22,7 +24,7 @@ class HealthyPetStoreETL(PetProductsETL):
 
         if not soup:
             logger.error(f"[WARN] No content found for category: {category}")
-            return pd.DataFrame(columns=["shop", "url"])
+            return pd.DataFrame({})
 
         try:
             product_list = soup.find('ul', class_="products")
@@ -30,7 +32,7 @@ class HealthyPetStoreETL(PetProductsETL):
                 'href') for product in product_list.find_all('li', class_="product")]
         except AttributeError:
             logger.error(f"[ERROR] Unexpected page structure for: {url}")
-            return pd.DataFrame(columns=["shop", "url"])
+            return pd.DataFrame({})
 
         df = pd.DataFrame({"url": urls})
         df.insert(0, "shop", self.SHOP)
@@ -39,7 +41,12 @@ class HealthyPetStoreETL(PetProductsETL):
 
     def transform(self, soup: BeautifulSoup, url: str):
         try:
-            product_name = soup.find('h1', class_="product_title").get_text()
+            if soup.find('h1', class_="product_title"):
+                product_name = soup.find(
+                    'h1', class_="product_title").get_text()
+            else:
+                return pd.DataFrame({})
+
             product_description = None
 
             if soup.find('div', class_="woocommerce-product-details__short-description"):
@@ -59,8 +66,9 @@ class HealthyPetStoreETL(PetProductsETL):
                 for price_data in json.loads(soup.find('form', class_="variations_form").get('data-product_variations')):
                     variants.append(price_data['attributes'].get(
                         'attribute_pa_variations-sizes') or price_data['attributes'].get('attribute_pa_size'))
-                    image_urls.append(
-                        soup.find('meta', attrs={'property': "og:image"}).get('content'))
+                    image_urls.append(soup.find('meta', {'property': 'og:image'}).get(
+                        'content') if soup.find('meta', {'property': 'og:image'}) else None)
+
                     if price_data.get('display_price') != price_data.get('display_regular_price'):
                         price = float(price_data.get('display_regular_price'))
                         discounted_price = float(
@@ -78,8 +86,9 @@ class HealthyPetStoreETL(PetProductsETL):
 
             else:
                 variants.append(None)
-                image_urls.append(
-                    soup.find('meta', attrs={'property': "og:image"}).get('content'))
+                image_urls.append(soup.find('meta', {'property': 'og:image'}).get(
+                    'content') if soup.find('meta', {'property': 'og:image'}) else None)
+
                 if soup.find('p', class_="price").find('del'):
                     price = float(soup.find('p', class_="price").find(
                         'del').find('bdi').get_text().replace('£', ''))
