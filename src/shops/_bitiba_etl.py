@@ -6,7 +6,7 @@ import random
 import pandas as pd
 import requests
 
-from functions.etl import PetProductsETL
+from ..etl import PetProductsETL
 from bs4 import BeautifulSoup
 from loguru import logger
 from tenacity import retry, wait_exponential, stop_after_attempt, retry_if_exception_type, before_sleep_log

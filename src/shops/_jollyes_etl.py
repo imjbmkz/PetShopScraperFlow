@@ -4,7 +4,7 @@ import json
 import math
 import re
 import random
-from functions.etl import PetProductsETL
+from ..etl import PetProductsETL
 from bs4 import BeautifulSoup
 from loguru import logger
 
