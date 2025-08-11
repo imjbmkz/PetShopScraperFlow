@@ -22,18 +22,9 @@ client = run_etl(SHOP_NAME)
 def get_product_urls():
     client.get_links_by_category()
 
-@task(
-    name="Get Product Details",
-    description="Get product details based on the collected URLs.",
-    task_run_name=f"get-{SHOP_NAME}-product-details-as-of-{RUN_DATE}"
-)
-def get_product_details():
-    client.get_product_infos()
-
 @flow
 def pipeline():
     get_product_urls()
-    # get_product_details()
 
 if __name__ == "__main__":
     pipeline()
