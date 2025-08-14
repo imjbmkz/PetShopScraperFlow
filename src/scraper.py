@@ -24,9 +24,9 @@ from loguru import logger
 nest_asyncio.apply()
 
 # Configuration constants
-MAX_RETRIES = 5
-MAX_WAIT_BETWEEN_REQ = 8
-MIN_WAIT_BETWEEN_REQ = 2
+MAX_RETRIES = 2
+MAX_WAIT_BETWEEN_REQ = 3
+MIN_WAIT_BETWEEN_REQ = 1
 REQUEST_TIMEOUT = 60000
 PAGE_LOAD_TIMEOUT = 60000
 
