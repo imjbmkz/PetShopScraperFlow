@@ -15,7 +15,7 @@ FROM {table_name} a
 LEFT JOIN pet_product_variants b 
     ON b.url = a.url 
    AND IFNULL(b.variant, '') = IFNULL(a.variant, '')
-LEFT JOIN pet_product_variant_prices c 
-    ON c.product_variant_id = b.id 
-   AND c.shop_id = b.shop_id
-WHERE c.id IS NULL;
+-- LEFT JOIN pet_product_variant_prices c 
+--     ON c.product_variant_id = b.id 
+--    AND c.shop_id = b.shop_id
+-- WHERE c.id IS NULL;
