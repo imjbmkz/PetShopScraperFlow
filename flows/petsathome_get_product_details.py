@@ -10,7 +10,7 @@ sys.path.append(str(Path(__file__).parent.parent))
 # sys.path.append(str(Path(__file__).parent.parent / "src"))
 
 
-SHOP_NAME = "FarmAndPetPlace"
+SHOP_NAME = "PetsAtHomePetsAtHome"
 RUN_DATE = dt.datetime.now().strftime("%Y%m%d")
 client = run_etl(SHOP_NAME)
 

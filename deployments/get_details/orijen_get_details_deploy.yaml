@@ -19,19 +19,19 @@ pull:
 
 # the deployments section allows you to provide configuration for deploying flows
 deployments:
-  - name: bernpetfoods-get-product-details
+  - name: orijen-get-product-details
     version: null
     tags: []
     concurrency_limit: null
     description: null
-    entrypoint: flows\bernpetfoods_get_product_details.py:pipeline
+    entrypoint: flows\orijen_get_product_details.py:pipeline
     parameters: {}
     work_pool:
       name: base-workpool
       work_queue_name: null
       job_variables: {}
     schedules:
-      - cron: 0 0 * * 1
+      - cron: 0 0 * * 0
         timezone: UTC
         day_or: true
         active: true

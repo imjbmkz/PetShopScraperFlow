@@ -55,7 +55,11 @@ class FarmAndPetPlaceETL(PetProductsETL):
             category, '.main-products-loop', wait_until='load',
             min_sec=1, max_sec=3
         ))
-        self._process_soup(soup, category)
+
+        if soup is not None:
+            self._process_soup(soup, category)
+        else:
+            return pd.DataFrame({})
 
         if self.scrape_url_again:
             asyncio.run(self.rescrape_urls())
