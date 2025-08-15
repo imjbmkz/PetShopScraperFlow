@@ -56,7 +56,7 @@ class FarmAndPetPlaceETL(PetProductsETL):
             min_sec=1, max_sec=3
         ))
 
-        if soup is not None:
+        if soup:
             self._process_soup(soup, category)
         else:
             return pd.DataFrame({})
