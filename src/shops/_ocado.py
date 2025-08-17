@@ -16,9 +16,9 @@ class OcadoETL(PetProductsETL):
         super().__init__()
         self.SHOP = "Ocado"
         self.BASE_URL = "https://www.ocado.com"
-        self.SELECTOR_SCRAPE_PRODUCT_INFO = '.main-content'
+        self.SELECTOR_SCRAPE_PRODUCT_INFO = '#main'
         self.MIN_SEC_SLEEP_PRODUCT_INFO = 1
-        self.MAX_SEC_SLEEP_PRODUCT_INFO = 3
+        self.MAX_SEC_SLEEP_PRODUCT_INFO = 2
 
     async def product_list_scrolling(self, url, selector, timeout: int = 60):
         browser = None

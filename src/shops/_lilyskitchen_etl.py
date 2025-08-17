@@ -12,7 +12,7 @@ class LilysKitchenETL(PetProductsETL):
         self.BASE_URL = "https://www.lilyskitchen.co.uk"
         self.SELECTOR_SCRAPE_PRODUCT_INFO = 'div.l-pdp-product_primary_info'
         self.MIN_SEC_SLEEP_PRODUCT_INFO = 1
-        self.MAX_SEC_SLEEP_PRODUCT_INFO = 3
+        self.MAX_SEC_SLEEP_PRODUCT_INFO = 2
 
     def extract(self, category):
         category_link = f"{self.BASE_URL}{category}"

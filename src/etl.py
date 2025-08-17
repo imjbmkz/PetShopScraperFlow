@@ -19,13 +19,13 @@ class PetProductsETL(ABC):
         self.BASE_URL = ""
         self.SELECTOR_SCRAPE_PRODUCT_INFO = ''
         self.MIN_SEC_SLEEP_PRODUCT_INFO = 1
-        self.MAX_SEC_SLEEP_PRODUCT_INFO = 3
+        self.MAX_SEC_SLEEP_PRODUCT_INFO = 2
         self.connection = Connection()
         self.wait_until = "load"
         self.browser_type = 'chromium'
         self.with_proxy = False
 
-    async def scrape(self, url, selector, proxy=None, headers=None, wait_until="load", min_sec=1, max_sec=3, browser='chromium'):
+    async def scrape(self, url, selector, proxy=None, headers=None, wait_until="load", min_sec=1, max_sec=3, browser='firefox'):
         soup = await scrape_url(url, selector, proxy, headers, wait_until, min_sec=min_sec, max_sec=max_sec, browser=browser)
         return soup if soup else False
 
