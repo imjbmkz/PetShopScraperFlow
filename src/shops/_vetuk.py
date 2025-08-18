@@ -132,6 +132,7 @@ class VetUKETL(PetProductsETL):
                         price = v.find(
                             'span', class_='retailPrice').get_text().replace('£', '')
 
+                    price = float(price.replace(' (each)', ''))
                     prices.append(price)
                 else:
                     prices.append(None)
