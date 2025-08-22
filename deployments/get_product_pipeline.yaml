@@ -1,0 +1,530 @@
+# Welcome to your prefect.yaml file! You can use this file for storing and managing
+# configuration for deploying your flows. We recommend committing this file to source
+# control along with your flow code.
+
+# Generic metadata about this project
+name: PetShopScraper
+prefect-version: 3.4.9
+
+# build section allows you to manage and build docker images
+build: null
+
+# push section allows you to manage if and how this project is uploaded to remote locations
+push: null
+
+# pull section allows you to provide instructions for cloning this project in remote locations
+pull:
+  - prefect.deployments.steps.set_working_directory:
+      directory: C:\00_DevProjects\Projects\PetShopScraper
+
+# the deployments section allows you to provide configuration for deploying flows
+deployments:
+  - name: asda-get-product-details
+    version: null
+    tags: []
+    concurrency_limit: null
+    description: null
+    entrypoint: flows\asda_get_product_details.py:pipeline
+    parameters: {}
+    work_pool:
+      name: base-workpool
+      work_queue_name: null
+      job_variables: {}
+    schedules:
+      - cron: 0 0 * * 0
+        timezone: UTC
+        day_or: true
+        active: true
+
+  - name: bernpetfoods-get-product-details
+    version: null
+    tags: []
+    concurrency_limit: null
+    description: null
+    entrypoint: flows\bernpetfoods_get_product_details.py:pipeline
+    parameters: {}
+    work_pool:
+      name: base-workpool
+      work_queue_name: null
+      job_variables: {}
+    schedules:
+      - cron: 0 0 * * 1
+        timezone: UTC
+        day_or: true
+        active: true
+
+  - name: bitiba-get-product-details
+    version: null
+    tags: []
+    concurrency_limit: null
+    description: null
+    entrypoint: flows\bitiba_get_product_details.py:pipeline
+    parameters: {}
+    work_pool:
+      name: base-workpool
+      work_queue_name: null
+      job_variables: {}
+    schedules:
+      - cron: 0 0 * * 0
+        timezone: UTC
+        day_or: true
+        active: true
+
+  - name: burnspet-get-product-details
+    version: null
+    tags: []
+    concurrency_limit: null
+    description: null
+    entrypoint: flows\burnspet_get_product_details.py:pipeline
+    parameters: {}
+    work_pool:
+      name: base-workpool
+      work_queue_name: null
+      job_variables: {}
+    schedules:
+      - cron: 0 0 * * 0
+        timezone: UTC
+        day_or: true
+        active: true
+
+  - name: directvet-get-product-details
+    version: null
+    tags: []
+    concurrency_limit: null
+    description: null
+    entrypoint: flows\directvet_get_product_details.py:pipeline
+    parameters: {}
+    work_pool:
+      name: base-workpool
+      work_queue_name: null
+      job_variables: {}
+    schedules:
+      - cron: 0 0 * * 0
+        timezone: UTC
+        day_or: true
+        active: true
+
+  - name: farmandpetplace-get-product-details
+    version: null
+    tags: []
+    concurrency_limit: null
+    description: null
+    entrypoint: flows\farmandpetplace_get_product_details.py:pipeline
+    parameters: {}
+    work_pool:
+      name: base-workpool
+      work_queue_name: null
+      job_variables: {}
+    schedules:
+      - cron: 0 0 * * 1
+        timezone: UTC
+        day_or: true
+        active: true
+
+  - name: fishkeeper-get-product-details
+    version: null
+    tags: []
+    concurrency_limit: null
+    description: null
+    entrypoint: flows\fishkeeper_get_product_details.py:pipeline
+    parameters: {}
+    work_pool:
+      name: base-workpool
+      work_queue_name: null
+      job_variables: {}
+    schedules:
+      - cron: 0 0 * * 0
+        timezone: UTC
+        day_or: true
+        active: true
+
+  - name: harringtons-get-product-details
+    version: null
+    tags: []
+    concurrency_limit: null
+    description: null
+    entrypoint: flows\harringtons_get_product_details.py:pipeline
+    parameters: {}
+    work_pool:
+      name: base-workpool
+      work_queue_name: null
+      job_variables: {}
+    schedules:
+      - cron: 0 0 * * 0
+        timezone: UTC
+        day_or: true
+        active: true
+
+  - name: healthypetstore-get-product-details
+    version: null
+    tags: []
+    concurrency_limit: null
+    description: null
+    entrypoint: flows\healthypetstore_get_product_details.py:pipeline
+    parameters: {}
+    work_pool:
+      name: base-workpool
+      work_queue_name: null
+      job_variables: {}
+    schedules:
+      - cron: 0 0 * * 0
+        timezone: UTC
+        day_or: true
+        active: true
+
+  - name: jollyes-get-product-details
+    version: null
+    tags: []
+    concurrency_limit: null
+    description: null
+    entrypoint: flows\jollyes_get_product_details.py:pipeline
+    parameters: {}
+    work_pool:
+      name: base-workpool
+      work_queue_name: null
+      job_variables: {}
+    schedules:
+      - cron: 0 0 * * 0
+        timezone: UTC
+        day_or: true
+        active: true
+
+  - name: lilyskitchen-get-product-details
+    version: null
+    tags: []
+    concurrency_limit: null
+    description: null
+    entrypoint: flows\lilyskitchen_get_product_details.py:pipeline
+    parameters: {}
+    work_pool:
+      name: base-workpool
+      work_queue_name: null
+      job_variables: {}
+    schedules:
+      - cron: 0 0 * * 0
+        timezone: UTC
+        day_or: true
+        active: true
+
+  - name: naturesmenu-get-product-details
+    version: null
+    tags: []
+    concurrency_limit: null
+    description: null
+    entrypoint: flows\naturesmenu_get_product_details.py:pipeline
+    parameters: {}
+    work_pool:
+      name: base-workpool
+      work_queue_name: null
+      job_variables: {}
+    schedules:
+      - cron: 0 0 * * 0
+        timezone: UTC
+        day_or: true
+        active: true
+
+  - name: ocado-get-product-details
+    version: null
+    tags: []
+    concurrency_limit: null
+    description: null
+    entrypoint: flows\ocado_get_product_details.py:pipeline
+    parameters: {}
+    work_pool:
+      name: base-workpool
+      work_queue_name: null
+      job_variables: {}
+    schedules:
+      - cron: 0 0 * * 0
+        timezone: UTC
+        day_or: true
+        active: true
+
+  - name: orijen-get-product-details
+    version: null
+    tags: []
+    concurrency_limit: null
+    description: null
+    entrypoint: flows\orijen_get_product_details.py:pipeline
+    parameters: {}
+    work_pool:
+      name: base-workpool
+      work_queue_name: null
+      job_variables: {}
+    schedules:
+      - cron: 0 0 * * 0
+        timezone: UTC
+        day_or: true
+        active: true
+
+  - name: petdrugsonline-get-product-details
+    version: null
+    tags: []
+    concurrency_limit: null
+    description: null
+    entrypoint: flows\petdrugsonline_get_product_details.py:pipeline
+    parameters: {}
+    work_pool:
+      name: base-workpool
+      work_queue_name: null
+      job_variables: {}
+    schedules:
+      - cron: 0 0 * * 0
+        timezone: UTC
+        day_or: true
+        active: true
+
+  - name: petplanet-get-product-details
+    version: null
+    tags: []
+    concurrency_limit: null
+    description: null
+    entrypoint: flows\petplanet_get_product_details.py:pipeline
+    parameters: {}
+    work_pool:
+      name: base-workpool
+      work_queue_name: null
+      job_variables: {}
+    schedules:
+      - cron: 0 0 * * 0
+        timezone: UTC
+        day_or: true
+        active: true
+
+  - name: petsathome-get-product-details
+    version: null
+    tags: []
+    concurrency_limit: null
+    description: null
+    entrypoint: flows\petsathome_get_product_details.py:pipeline
+    parameters: {}
+    work_pool:
+      name: base-workpool
+      work_queue_name: null
+      job_variables: {}
+    schedules:
+      - cron: 0 0 * * 0
+        timezone: UTC
+        day_or: true
+        active: true
+
+  - name: petscorner-get-product-details
+    version: null
+    tags: []
+    concurrency_limit: null
+    description: null
+    entrypoint: flows\petscorner_get_product_details.py:pipeline
+    parameters: {}
+    work_pool:
+      name: base-workpool
+      work_queue_name: null
+      job_variables: {}
+    schedules:
+      - cron: 0 0 * * 0
+        timezone: UTC
+        day_or: true
+        active: true
+
+  - name: petshop-get-product-details
+    version: null
+    tags: []
+    concurrency_limit: null
+    description: null
+    entrypoint: flows\petshop_get_product_details.py:pipeline
+    parameters: {}
+    work_pool:
+      name: base-workpool
+      work_queue_name: null
+      job_variables: {}
+    schedules:
+      - cron: 0 0 * * 0
+        timezone: UTC
+        day_or: true
+        active: true
+
+  - name: petshoponline-get-product-details
+    version: null
+    tags: []
+    concurrency_limit: null
+    description: null
+    entrypoint: flows\petshoponline_get_product_details.py:pipeline
+    parameters: {}
+    work_pool:
+      name: base-workpool
+      work_queue_name: null
+      job_variables: {}
+    schedules:
+      - cron: 0 0 * * 0
+        timezone: UTC
+        day_or: true
+        active: true
+
+  - name: petsupermarket-get-product-details
+    version: null
+    tags: []
+    concurrency_limit: null
+    description: null
+    entrypoint: flows\petsupermarket_get_product_details.py:pipeline
+    parameters: {}
+    work_pool:
+      name: base-workpool
+      work_queue_name: null
+      job_variables: {}
+    schedules:
+      - cron: 0 0 * * 0
+        timezone: UTC
+        day_or: true
+        active: true
+
+  - name: purina-get-product-details
+    version: null
+    tags: []
+    concurrency_limit: null
+    description: null
+    entrypoint: flows\purina_get_product_details.py:pipeline
+    parameters: {}
+    work_pool:
+      name: base-workpool
+      work_queue_name: null
+      job_variables: {}
+    schedules:
+      - cron: 0 0 * * 0
+        timezone: UTC
+        day_or: true
+        active: true
+
+  - name: taylorpetfoods-get-product-details
+    version: null
+    tags: []
+    concurrency_limit: null
+    description: null
+    entrypoint: flows\taylorpetfoods_get_product_details.py:pipeline
+    parameters: {}
+    work_pool:
+      name: base-workpool
+      work_queue_name: null
+      job_variables: {}
+    schedules:
+      - cron: 0 0 * * 0
+        timezone: UTC
+        day_or: true
+        active: true
+
+  - name: thenaturalpetstore-get-product-details
+    version: null
+    tags: []
+    concurrency_limit: null
+    description: null
+    entrypoint: flows\thenaturalpetstore_get_product_details.py:pipeline
+    parameters: {}
+    work_pool:
+      name: base-workpool
+      work_queue_name: null
+      job_variables: {}
+    schedules:
+      - cron: 0 0 * * 0
+        timezone: UTC
+        day_or: true
+        active: true
+
+  - name: thepetexpress-get-product-details
+    version: null
+    tags: []
+    concurrency_limit: null
+    description: null
+    entrypoint: flows\thepetexpress_get_product_details.py:pipeline
+    parameters: {}
+    work_pool:
+      name: base-workpool
+      work_queue_name: null
+      job_variables: {}
+    schedules:
+      - cron: 0 0 * * 0
+        timezone: UTC
+        day_or: true
+        active: true
+
+  - name: therange-get-product-details
+    version: null
+    tags: []
+    concurrency_limit: null
+    description: null
+    entrypoint: flows\therange_get_product_details.py:pipeline
+    parameters: {}
+    work_pool:
+      name: base-workpool
+      work_queue_name: null
+      job_variables: {}
+    schedules:
+      - cron: 0 0 * * 0
+        timezone: UTC
+        day_or: true
+        active: true
+
+  - name: vetshop-get-product-details
+    version: null
+    tags: []
+    concurrency_limit: null
+    description: null
+    entrypoint: flows\vetshop_get_product_details.py:pipeline
+    parameters: {}
+    work_pool:
+      name: base-workpool
+      work_queue_name: null
+      job_variables: {}
+    schedules:
+      - cron: 0 0 * * 0
+        timezone: UTC
+        day_or: true
+        active: true
+
+  - name: vetuk-get-product-details
+    version: null
+    tags: []
+    concurrency_limit: null
+    description: null
+    entrypoint: flows\vetuk_get_product_details.py:pipeline
+    parameters: {}
+    work_pool:
+      name: base-workpool
+      work_queue_name: null
+      job_variables: {}
+    schedules:
+      - cron: 0 0 * * 0
+        timezone: UTC
+        day_or: true
+        active: true
+
+  - name: viovet-get-product-details
+    version: null
+    tags: []
+    concurrency_limit: null
+    description: null
+    entrypoint: flows\viovet_get_product_details.py:pipeline
+    parameters: {}
+    work_pool:
+      name: base-workpool
+      work_queue_name: null
+      job_variables: {}
+    schedules:
+      - cron: 0 0 * * 0
+        timezone: UTC
+        day_or: true
+        active: true
+
+  - name: zooplus-get-product-details
+    version: null
+    tags: []
+    concurrency_limit: null
+    description: null
+    entrypoint: flows\zooplus_get_product_details.py:pipeline
+    parameters: {}
+    work_pool:
+      name: base-workpool
+      work_queue_name: null
+      job_variables: {}
+    schedules:
+      - cron: 0 0 * * 1
+        timezone: UTC
+        day_or: true
+        active: true
