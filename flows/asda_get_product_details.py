@@ -20,14 +20,13 @@ client = run_etl(SHOP_NAME)
     description="Get details of each product.",
     task_run_name=f"get-{SHOP_NAME}-urls-as-of-{RUN_DATE}"
 )
-
 async def get_product_details():
     await client.get_product_infos()
 
 
 @flow
-def pipeline():
-    get_product_details()
+async def pipeline():
+    await get_product_details()
 
 
 if __name__ == "__main__":

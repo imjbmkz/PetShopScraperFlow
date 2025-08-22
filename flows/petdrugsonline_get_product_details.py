@@ -25,9 +25,8 @@ async def get_product_details():
 
 
 @flow
-def pipeline():
-    get_product_details()
-
+async def pipeline():
+    await get_product_details()
 
 if __name__ == "__main__":
     pipeline()
