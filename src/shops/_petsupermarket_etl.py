@@ -87,7 +87,7 @@ class PetSupermarketETL(PetProductsETL):
                         discount_percentages.append(discount_percentage)
 
                     else:
-                        prices.append(variant['price'])
+                        prices.append(variant['price'] / 100)
                         discounted_prices.append(None)
                         discount_percentages.append(None)
 

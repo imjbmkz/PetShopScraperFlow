@@ -1,6 +1,6 @@
 import re
 import math
-import json5
+import json
 import asyncio
 import pandas as pd
 
@@ -59,9 +59,7 @@ class PetPlanetETL(PetProductsETL):
                 'div', class_="product__description").get_text(strip=True)
             product_url = url.replace(self.BASE_URL, "")
 
-            rating = float(
-                soup.find('span', class_="jdgm-prev-badge__stars").get('data-score'))
-            product_rating = f"{int(rating) if rating == 0 else rating}/5"
+            product_rating = '0/5'
 
             variants = []
             prices = []
@@ -69,22 +67,42 @@ class PetPlanetETL(PetProductsETL):
             discount_percentages = []
             image_urls = []
 
-            variant_text = soup.find(
-                'div', class_="product__title").find_next_sibling().get_text()
+            list_variant = json.loads(soup.find_all(
+                'script', attrs={'type': 'application/json'})[-1].get_text())
 
-            match = re.search(
-                r'window\.productWithMetafields\s*=\s*(\{.*\});', variant_text, re.DOTALL)
-            if match:
-                raw_js_object = match.group(1).replace("\\/", "/")
-                product_data = json5.loads(raw_js_object)
-                for variant in product_data["variants"]:
-                    variants.append(variant['title'])
-                    image_urls.append(
-                        soup.find('meta', attrs={'property': 'og:image'}).get('content'))
+            if isinstance(list_variant, dict):
+                variants.append(None)
+                image_urls.append(
+                    soup.find('meta', attrs={'property': 'og:image'}).get('content'))
 
-                    if variant['compare_at_price'] != 0:
-                        price = variant['compare_at_price'] / 100
-                        discount_price = variant['price'] / 100
+                is_discount = soup.find("div", class_="price__container").select_one(
+                    "s.price-item--regular").get_text(strip=True)
+                if is_discount == '':
+                    price = float(soup.find("div", class_="price__container").find(
+                        'span', class_="price-item--regular").get_text(strip=True).replace("£", "").replace("GBP", ""))
+                    prices.append(price)
+                    discounted_prices.append(None)
+                    discount_percentages.append(None)
+                else:
+                    price = float(soup.find("div", class_="price__container").select_one(
+                        "s.price-item--regular").get_text().replace("£", "").replace("GBP", ""))
+                    discount_price = float(soup.find("div", class_="price__container").find(
+                        'span', class_="price-item--sale").get_text().replace("£", "").replace("GBP", ""))
+                    discount_percentage = "{:.2f}".format(
+                        (price - discount_price) / price)
+
+                    prices.append(price)
+                    discounted_prices.append(discount_price)
+                    discount_percentages.append(discount_percentage)
+
+            else:
+                for i in list_variant:
+                    variants.append(i['title'])
+                    image_urls.append("https:" + i['featured_image']['src'])
+
+                    if i['compare_at_price'] != None:
+                        price = i['compare_at_price'] / 100
+                        discount_price = i['price'] / 100
                         discount_percentage = "{:.2f}".format(
                             (price - discount_price) / price)
 
@@ -93,7 +111,7 @@ class PetPlanetETL(PetProductsETL):
                         discount_percentages.append(discount_percentage)
 
                     else:
-                        prices.append(variant['price'])
+                        prices.append(i['price'] / 100)
                         discounted_prices.append(None)
                         discount_percentages.append(None)
 
