@@ -10,7 +10,7 @@ sys.path.append(str(Path(__file__).parent.parent))
 # sys.path.append(str(Path(__file__).parent.parent / "src"))
 
 
-SHOP_NAME = "PetsAtHomePetsAtHome"
+SHOP_NAME = "PetsAtHome"
 RUN_DATE = dt.datetime.now().strftime("%Y%m%d")
 client = run_etl(SHOP_NAME)
 
@@ -20,8 +20,8 @@ client = run_etl(SHOP_NAME)
     description="Get details of each product.",
     task_run_name=f"get-{SHOP_NAME}-urls-as-of-{RUN_DATE}"
 )
-def get_product_details():
-    client.get_product_infos()
+async def get_product_details():
+    await client.get_product_infos()
 
 
 @flow
