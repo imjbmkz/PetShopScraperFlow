@@ -125,101 +125,72 @@ class BitibaETL(PetProductsETL):
 
     def transform(self, soup: BeautifulSoup, url: str):
         try:
-            product_data_list = soup.select(
-                "script[type*='application/ld+json']")
-            if product_data_list:
-                product_data = json.loads(product_data_list[1].text)
+            product_data = json.loads(soup.select(
+                "script[type*='application/ld+json']")[1].text)
+            product_title = product_data["name"]
+            description = product_data["description"]
+            rating = '0/5'
+            if "aggregateRating" in product_data.keys():
+                rating = product_data["aggregateRating"]["ratingValue"]
+                rating = f"{rating}/5"
 
-                product_title = product_data["name"]
-                rating = '0/5'
-                if "aggregateRating" in product_data.keys():
-                    rating = product_data["aggregateRating"]["ratingValue"]
-                    rating = f"{rating}/5"
+            product_url = url.replace(self.BASE_URL, "")
 
-                description = product_data["description"]
-                product_url = url.replace(self.BASE_URL, "")
+            # Placeholder for variant details
+            variants = []
+            prices = []
+            discounted_prices = []
+            discount_percentages = []
+            image_urls = []
 
-                # Placeholder for variant details
-                variants = []
-                prices = []
-                discounted_prices = []
-                discount_percentages = []
-                image_urls = []
+            for variant in product_data['hasVariant']:
+                variants.append(variant['name'].replace(
+                    product_title, '').strip())
+                image_urls.append(
+                    soup.find('meta', attrs={'property': "og:image"}).get('content'))
+                price = 0
+                discount_price = 0
+                discount_percentage = 0
 
-                pattern = r"^.*£"
-                rrb_pattern = r"[^\d\.]"
+                price_specifications = variant['offers']['priceSpecification']
 
-                variants_list = soup.find(
-                    'div', class_="VariantList_variantList__PeaNd")
-                if variants_list:
-                    variant_hopps = variants_list.select(
-                        "div[data-hopps*='Variant']")
-                    for variant_hopp in variant_hopps:
+                list_price = None
+                sale_price = None
 
-                        variant = variant_hopp.select_one(
-                            "span[class*='VariantDescription_description']").text
-                        image_variant = variant_hopp.find('img').get('src')
-                        discount_checker = variant_hopp.find(
-                            'div', class_="z-product-price__note-wrap")
+                for spec in price_specifications:
+                    if spec.get('priceType') == 'https://schema.org/ListPrice':
+                        list_price = spec['price']
+                    elif spec.get('priceType') == 'https://schema.org/SalePrice':
+                        sale_price = spec['price']
 
-                        if discount_checker:
-                            price = float(re.sub(rrb_pattern, "", variant_hopp.select_one(
-                                "div[class*='z-product-price__nowrap']").text))
-                            discounted_price = float(re.sub(pattern, "", variant_hopp.select_one(
-                                "span[class*='z-product-price__amount']").text))
-                            discount_percent = round(
-                                (price - float(discounted_price)) / price, 2)
-                        else:
-                            price = float(re.sub(pattern, "", variant_hopp.select_one(
-                                "span[class*='z-product-price__amount']").text))
-                            discounted_price = None
-                            discount_percent = None
-
-                        variants.append(variant)
-                        prices.append(price)
-                        discounted_prices.append(discounted_price)
-                        discount_percentages.append(discount_percent)
-                        image_urls.append(image_variant)
-
+                if list_price is not None:
+                    price = list_price
+                    discount_price = sale_price if sale_price is not None else 0
                 else:
-                    variant = soup.select_one(
-                        "div[data-zta*='ProductTitle__Subtitle']").text
-                    discount_checker = soup.find('span', attrs={
-                                                 'data-zta': 'SelectedArticleBox__TopSection'}).find('div', class_="z-product-price__note-wrap")
+                    price = sale_price if sale_price is not None else 0
+                    discount_price = 0
 
-                    if discount_checker:
-                        price = float(re.sub(rrb_pattern, "", soup.find('span', attrs={
-                                      'data-zta': 'SelectedArticleBox__TopSection'}).find('div', class_="z-product-price__nowrap").get_text()))
-                        discounted_price = float(re.sub(pattern, "", soup.find('span', attrs={
-                                                 'data-zta': 'SelectedArticleBox__TopSection'}).find('span', class_="z-product-price__amount--reduced").get_text()))
-                        discount_percent = round(
-                            (price - float(discounted_price)) / price, 2)
-                    else:
-                        price = float(re.sub(pattern, "", soup.find('span', attrs={
-                                      'data-zta': 'SelectedArticleBox__TopSection'}).find('span', class_="z-product-price__amount").get_text()))
-                        discounted_price = None
-                        discount_percent = None
+                if discount_price != 0 and price != 0:
+                    discount_percentage = "{:.2f}".format(
+                        (price - discount_price) / price)
 
-                    variants.append(variant)
-                    prices.append(price)
-                    discounted_prices.append(discounted_price)
-                    discount_percentages.append(discount_percent)
-                    image_urls.append(
-                        soup.find('meta', attrs={'property': "og:image"}).get('content'))
+                prices.append(price)
+                discounted_prices.append(discount_price)
+                discount_percentages.append(discount_percentage)
 
-                df = pd.DataFrame({
-                    "variant": variants,
-                    "price": prices,
-                    "discounted_price": discounted_prices,
-                    "discount_percentage": discount_percentages,
-                    "image_urls": image_urls
-                })
-                df.insert(0, "url", product_url)
-                df.insert(0, "description", description)
-                df.insert(0, "rating", rating)
-                df.insert(0, "name", product_title)
-                df.insert(0, "shop", self.SHOP)
+            df = pd.DataFrame({
+                "variant": variants,
+                "price": prices,
+                "discounted_price": discounted_prices,
+                "discount_percentage": discount_percentages,
+                "image_urls": image_urls
+            })
+            df.insert(0, "url", product_url)
+            df.insert(0, "description", description)
+            df.insert(0, "rating", rating)
+            df.insert(0, "name", product_title)
+            df.insert(0, "shop", self.SHOP)
 
-                return df
+            return df
         except Exception as e:
             logger.error(f"Error scraping {url}: {e}")

@@ -48,7 +48,7 @@ class ProxyRotator:
 
         # Source 1: FreeProxy
         try:
-            proxy = FreeProxy(rand=True, timeout=2).get()
+            proxy = FreeProxy(rand=True, timeout=2, country_id=['GB']).get()
             if proxy:
                 proxy_sources.append(proxy)
         except Exception as e:
