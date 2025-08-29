@@ -27,7 +27,7 @@ class BitibaETL(PetProductsETL):
         self.SELECTOR_SCRAPE_PRODUCT_INFO = 'main#page-content'
         self.MIN_SEC_SLEEP_PRODUCT_INFO = 1
         self.MAX_SEC_SLEEP_PRODUCT_INFO = 2
-        self.with_proxy = True
+        self.with_proxy = False
 
     @retry(
         wait=wait_exponential(
