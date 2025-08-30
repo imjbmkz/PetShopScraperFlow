@@ -266,9 +266,12 @@ class WebScraper:
             return soup
 
         except asyncio.TimeoutError as e:
+            if page:
+                await page.close()
             raise ScrapingError(f"Timeout for {url}: {e}")
 
         except Exception as e:
+            await self.close()
             raise ScrapingError(f"Error scraping {url}: {str(e)}")
 
         finally:
