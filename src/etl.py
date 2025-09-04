@@ -22,7 +22,7 @@ class PetProductsETL(ABC):
         self.MAX_SEC_SLEEP_PRODUCT_INFO = 2
         self.connection = Connection()
         self.wait_until = "load"
-        self.browser_type = 'chromium'
+        self.browser_type = 'firefox'
         self.with_proxy = False
 
     async def scrape(self, url, selector, proxy=None, headers=None, wait_until="load", min_sec=1, max_sec=3, browser='firefox'):
